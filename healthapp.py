@@ -4,7 +4,7 @@ import unicodedata
 import streamlit as st
 from mistralai import Mistral
 
-st.set_page_config(page_title="Health & Wellness Bot", page_icon="🩺")
+st.set_page_config(page_title="Mistral Chat", page_icon="🤖")
 
 # ---- Helpers ----
 def normalize_text(s: str) -> str:
@@ -28,22 +28,13 @@ if not api_key:
 
 client = Mistral(api_key=api_key)
 MODEL = "mistral-large-latest"
-
-# ---- System Prompt ----
-SYSTEM_PROMPT = (
-    "You are a friendly health & wellness assistant. "
-    "Give practical, evidence-informed tips on sleep, diet, hydration, "
-    "exercise, and stress management. "
-    "Keep answers short, simple, and helpful. "
-    "⚠️ Do not give medical diagnoses or prescriptions. "
-    "If asked, say you are not a doctor and advise seeing a professional."
-)
+SYSTEM_PROMPT = "You are a friendly heanth assistant who can anser about halth questions"
 
 # ---- State ----
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
-st.title("🩺 Health & Wellness Chat Bot")
+st.title("🤖 Mistral Chat")
 
 # ---- Show history ----
 for m in st.session_state.messages:
@@ -53,7 +44,7 @@ for m in st.session_state.messages:
         st.markdown(normalize_text(m["content"]))
 
 # ---- Input ----
-user_msg = st.chat_input("Ask me about health, wellness, or lifestyle tips...")
+user_msg = st.chat_input("Type your message...")
 if user_msg:
     user_msg = normalize_text(user_msg)
     st.session_state.messages.append({"role": "user", "content": user_msg})
@@ -68,7 +59,7 @@ if user_msg:
                 {"role": m["role"], "content": normalize_text(m["content"])}
                 for m in st.session_state.messages
             ],
-            temperature=0.6,
+            temperature=0.7,
             max_tokens=400,
         )
         bot_reply = normalize_text(resp.choices[0].message.content)
@@ -80,4 +71,6 @@ if user_msg:
         st.markdown(bot_reply)
 
 # ---- Sidebar actions ----
-if st.sidebar.button("Cle
+if st.sidebar.button("Clear chat"):
+    st.session_state.clear()
+    st.rerun()
